@@ -14,6 +14,7 @@ import DashboardExecutivo from "./pages/DashboardExecutivo";
 import Empresas from "./pages/Empresas";
 import MapaInterativo from "./pages/MapaInterativo";
 import Relatorios from "./pages/Relatorios";
+import Administracao from "./pages/Administracao";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -68,6 +69,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Relatorios />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <Administracao />
                 </ProtectedRoute>
               }
             />
