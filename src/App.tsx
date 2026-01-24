@@ -13,6 +13,7 @@ import Dashboard from "./pages/Dashboard";
 import DashboardExecutivo from "./pages/DashboardExecutivo";
 import Empresas from "./pages/Empresas";
 import MapaInterativo from "./pages/MapaInterativo";
+import Relatorios from "./pages/Relatorios";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -59,6 +60,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <MapaInterativo />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/reports"
+              element={
+                <ProtectedRoute>
+                  <Relatorios />
                 </ProtectedRoute>
               }
             />
