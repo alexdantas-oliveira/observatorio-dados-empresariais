@@ -74,6 +74,158 @@ export type Database = {
         }
         Relationships: []
       }
+      report_history: {
+        Row: {
+          error_message: string | null
+          file_size: number | null
+          file_url: string | null
+          filters_applied: Json | null
+          generated_at: string
+          id: string
+          report_name: string
+          report_type: string
+          scheduled_report_id: string | null
+          status: string
+          template_id: string | null
+          user_id: string
+        }
+        Insert: {
+          error_message?: string | null
+          file_size?: number | null
+          file_url?: string | null
+          filters_applied?: Json | null
+          generated_at?: string
+          id?: string
+          report_name: string
+          report_type: string
+          scheduled_report_id?: string | null
+          status: string
+          template_id?: string | null
+          user_id: string
+        }
+        Update: {
+          error_message?: string | null
+          file_size?: number | null
+          file_url?: string | null
+          filters_applied?: Json | null
+          generated_at?: string
+          id?: string
+          report_name?: string
+          report_type?: string
+          scheduled_report_id?: string | null
+          status?: string
+          template_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_history_scheduled_report_id_fkey"
+            columns: ["scheduled_report_id"]
+            isOneToOne: false
+            referencedRelation: "scheduled_reports"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "report_history_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "report_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      report_templates: {
+        Row: {
+          config: Json
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_default: boolean | null
+          name: string
+          template_type: string
+          updated_at: string
+        }
+        Insert: {
+          config?: Json
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          name: string
+          template_type: string
+          updated_at?: string
+        }
+        Update: {
+          config?: Json
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          template_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      scheduled_reports: {
+        Row: {
+          created_at: string
+          filters: Json | null
+          id: string
+          is_active: boolean | null
+          last_run_at: string | null
+          name: string
+          next_run_at: string | null
+          recipients: string[] | null
+          schedule_config: Json
+          schedule_type: string
+          template_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          filters?: Json | null
+          id?: string
+          is_active?: boolean | null
+          last_run_at?: string | null
+          name: string
+          next_run_at?: string | null
+          recipients?: string[] | null
+          schedule_config?: Json
+          schedule_type: string
+          template_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          filters?: Json | null
+          id?: string
+          is_active?: boolean | null
+          last_run_at?: string | null
+          name?: string
+          next_run_at?: string | null
+          recipients?: string[] | null
+          schedule_config?: Json
+          schedule_type?: string
+          template_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scheduled_reports_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "report_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           assigned_at: string
