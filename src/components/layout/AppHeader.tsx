@@ -1,17 +1,18 @@
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/AuthContext";
 import { ROLE_LABELS } from "@/types/auth";
-import { Bell, Search } from "lucide-react";
+import { Bell, Search, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface AppHeaderProps {
   title?: string;
 }
 
 export function AppHeader({ title }: AppHeaderProps) {
-  const { role } = useAuth();
+  const { role, signOut } = useAuth();
 
   return (
     <header className="sticky top-0 z-40 h-16 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -52,6 +53,17 @@ export function AppHeader({ title }: AppHeaderProps) {
               3
             </span>
           </Button>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon" onClick={signOut}>
+                <LogOut className="h-5 w-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Sair</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
       </div>
     </header>
