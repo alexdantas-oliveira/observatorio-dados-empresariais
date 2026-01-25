@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, BarChart3, Eye, EyeOff, ArrowRight } from "lucide-react";
+import loginIllustration from "@/assets/login-illustration.png";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -40,49 +41,39 @@ export default function Login() {
   return (
     <div className="min-h-screen flex">
       {/* Left side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 gradient-dark relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-20 w-72 h-72 bg-primary rounded-full blur-3xl" />
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-accent rounded-full blur-3xl" />
-        </div>
-        
-        <div className="relative z-10 flex flex-col justify-center p-12 text-white">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-12 h-12 rounded-xl gradient-primary flex items-center justify-center">
-              <BarChart3 className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold">Observatório</h1>
-              <p className="text-sm text-white/70">Dados Empresariais</p>
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary/90 via-primary to-primary/80 relative overflow-hidden">
+        <div className="relative z-10 flex flex-col items-center justify-center p-12 w-full">
+          {/* Headline */}
+          <div className="text-center mb-8">
+            <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight">
+              Descubra o potencial
+              <br />
+              econômico do Piauí em
+              <br />
+              <span className="italic text-white/90">um só lugar!</span>
+            </h2>
+          </div>
+          
+          {/* Illustration */}
+          <div className="w-full max-w-md mb-8">
+            <div className="bg-white/95 rounded-3xl p-6 shadow-2xl">
+              <img 
+                src={loginIllustration} 
+                alt="Análise de dados empresariais" 
+                className="w-full h-auto"
+              />
             </div>
           </div>
           
-          <h2 className="text-4xl font-bold mb-6 leading-tight">
-            Dados estratégicos para o<br />
-            <span className="text-gradient">desenvolvimento do Piauí</span>
-          </h2>
-          
-          <p className="text-lg text-white/80 mb-8 max-w-md">
-            Plataforma integrada de análise empresarial com informações em tempo real 
-            sobre o ecossistema de negócios do estado.
-          </p>
-          
-          <div className="flex gap-8">
-            <div>
-              <p className="text-3xl font-bold text-primary">50K+</p>
-              <p className="text-sm text-white/60">Empresas</p>
-            </div>
-            <div>
-              <p className="text-3xl font-bold text-accent">87</p>
-              <p className="text-sm text-white/60">Municípios</p>
-            </div>
-            <div>
-              <p className="text-3xl font-bold text-success">12</p>
-              <p className="text-sm text-white/60">Setores</p>
-            </div>
+          {/* Pagination dots */}
+          <div className="flex gap-2 mt-4">
+            <div className="w-2.5 h-2.5 rounded-full bg-white" />
+            <div className="w-2.5 h-2.5 rounded-full bg-white/40" />
+            <div className="w-2.5 h-2.5 rounded-full bg-white/40" />
           </div>
           
-          <div className="absolute bottom-8 left-12 text-sm text-white/50">
+          {/* Footer */}
+          <div className="absolute bottom-6 left-0 right-0 text-center text-sm text-white/60">
             JUCEPI • SEBRAE • Governo do Piauí
           </div>
         </div>
