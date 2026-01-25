@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useRef } from "react";
-import { MapContainer, TileLayer, CircleMarker, Popup, Tooltip, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, CircleMarker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet.markercluster/dist/MarkerCluster.css";
@@ -109,7 +109,6 @@ function ClusterLayer({ municipios, getColor, getRadius, showClusters }: Cluster
 export function InteractiveMap() {
   const [activeLayer, setActiveLayer] = useState<DataLayerType>("empresas");
   const [showClusters, setShowClusters] = useState(false);
-  const [showLabels, setShowLabels] = useState(true);
 
   const getColor = useMemo(() => {
     return (m: MunicipioData) => {
@@ -243,18 +242,6 @@ export function InteractiveMap() {
               <Popup maxWidth={300}>
                 <MunicipalityPopup municipio={municipio} />
               </Popup>
-              {showLabels && (
-                <Tooltip
-                  permanent
-                  direction="top"
-                  offset={[0, -10]}
-                  className="!bg-transparent !border-0 !shadow-none !p-0"
-                >
-                  <span className="text-[10px] font-medium text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-                    {municipio.nome}
-                  </span>
-                </Tooltip>
-              )}
             </CircleMarker>
           ))}
       </MapContainer>
@@ -264,8 +251,6 @@ export function InteractiveMap() {
         onLayerChange={setActiveLayer}
         showClusters={showClusters}
         onToggleClusters={setShowClusters}
-        showLabels={showLabels}
-        onToggleLabels={setShowLabels}
       />
 
       <MapLegend title={legendTitle} items={legendItems} />
