@@ -22,7 +22,7 @@ const slides = [
     image: loginIllustration2,
     title: "Análise regional",
     subtitle: "com dados de todos os",
-    highlight: "87 municípios!",
+    highlight: "224 municípios!",
   },
   {
     image: loginIllustration3,
