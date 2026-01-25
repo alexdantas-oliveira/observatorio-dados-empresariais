@@ -18,8 +18,6 @@ interface MapControlsProps {
   onLayerChange: (layer: DataLayerType) => void;
   showClusters: boolean;
   onToggleClusters: (enabled: boolean) => void;
-  showLabels: boolean;
-  onToggleLabels: (enabled: boolean) => void;
 }
 
 export function MapControls({
@@ -27,8 +25,6 @@ export function MapControls({
   onLayerChange,
   showClusters,
   onToggleClusters,
-  showLabels,
-  onToggleLabels,
 }: MapControlsProps) {
   const layers = [
     { value: "empresas", label: "Empresas Ativas", icon: Building2 },
@@ -64,7 +60,7 @@ export function MapControls({
           </Select>
         </div>
 
-        <div className="space-y-3 pt-2 border-t border-border/50">
+        <div className="pt-2 border-t border-border/50">
           <div className="flex items-center justify-between">
             <Label htmlFor="clusters" className="text-xs text-muted-foreground">
               Agrupamento (Clusters)
@@ -73,17 +69,6 @@ export function MapControls({
               id="clusters"
               checked={showClusters}
               onCheckedChange={onToggleClusters}
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <Label htmlFor="labels" className="text-xs text-muted-foreground">
-              Rótulos dos Municípios
-            </Label>
-            <Switch
-              id="labels"
-              checked={showLabels}
-              onCheckedChange={onToggleLabels}
             />
           </div>
         </div>
