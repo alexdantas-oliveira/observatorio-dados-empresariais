@@ -11,6 +11,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import DashboardExecutivo from "./pages/DashboardExecutivo";
+import Analises from "./pages/Analises";
 import Empresas from "./pages/Empresas";
 import MapaInterativo from "./pages/MapaInterativo";
 import Relatorios from "./pages/Relatorios";
@@ -45,6 +46,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <DashboardExecutivo />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/analytics"
+              element={
+                <ProtectedRoute requiredRole="analista">
+                  <Analises />
                 </ProtectedRoute>
               }
             />
