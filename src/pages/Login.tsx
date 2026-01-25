@@ -73,13 +73,13 @@ export default function Login() {
     <div className="min-h-screen flex">
       {/* Left side - Branding */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary/90 via-primary to-primary/80 relative overflow-hidden">
-        <div className="relative z-10 flex flex-col items-center justify-center p-12 w-full">
+        <div className="relative z-10 flex flex-col items-center justify-center p-8 xl:p-12 w-full h-full">
           {/* Headline with transition */}
-          <div className="text-center mb-8 h-32 flex items-center">
+          <div className="text-center mb-6 h-28 flex items-center relative w-full">
             {slides.map((slide, index) => (
               <h2
                 key={index}
-                className={`text-3xl md:text-4xl font-bold text-white leading-tight absolute left-0 right-0 px-12 transition-all duration-700 ease-in-out ${
+                className={`text-2xl md:text-3xl xl:text-4xl font-bold text-white leading-tight absolute left-0 right-0 px-8 transition-all duration-700 ease-in-out ${
                   index === currentSlide
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-4"
@@ -95,11 +95,11 @@ export default function Login() {
           </div>
           
           {/* Illustration with transition */}
-          <div className="w-full max-w-md mb-8 relative h-72">
+          <div className="w-full max-w-lg xl:max-w-xl flex-1 max-h-[450px] relative">
             {slides.map((slide, index) => (
               <div
                 key={index}
-                className={`absolute inset-0 bg-white/95 rounded-3xl p-6 shadow-2xl transition-all duration-700 ease-in-out ${
+                className={`absolute inset-0 bg-white/95 rounded-3xl p-4 xl:p-6 shadow-2xl transition-all duration-700 ease-in-out ${
                   index === currentSlide
                     ? "opacity-100 scale-100"
                     : "opacity-0 scale-95"
@@ -115,7 +115,7 @@ export default function Login() {
           </div>
           
           {/* Pagination dots */}
-          <div className="flex gap-2 mt-4">
+          <div className="flex gap-2 mt-6">
             {slides.map((_, index) => (
               <button
                 key={index}
@@ -130,7 +130,7 @@ export default function Login() {
           </div>
           
           {/* Footer */}
-          <div className="absolute bottom-6 left-0 right-0 text-center text-sm text-white/60">
+          <div className="absolute bottom-4 left-0 right-0 text-center text-sm text-white/60">
             JUCEPI • SEBRAE • Governo do Piauí
           </div>
         </div>
