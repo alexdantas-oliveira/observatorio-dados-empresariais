@@ -4,7 +4,9 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
-import "leaflet.markercluster";
+// NOTE: We intentionally DO NOT import "leaflet.markercluster" at module scope.
+// With Vite + ESM, this plugin can sometimes break the initial render (blank screen)
+// due to interop/side-effect timing. We load it dynamically only when clusters are enabled.
 
 import { municipiosPI, getDensityColor, getPibColor, getIdhmColor, MunicipioData } from "@/data/municipiosPI";
 import { MapControls, DataLayerType } from "./MapControls";
@@ -102,6 +104,8 @@ function ClusterLayer({ municipios, getColor, getRadius, showClusters }: Cluster
   const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
+
     if (!showClusters) {
       if (clusterGroupRef.current) {
         map.removeLayer(clusterGroupRef.current);
@@ -110,61 +114,70 @@ function ClusterLayer({ municipios, getColor, getRadius, showClusters }: Cluster
       return;
     }
 
-    // Create cluster group
-    const clusterGroup = L.markerClusterGroup({
-      chunkedLoading: true,
-      maxClusterRadius: 80,
-      spiderfyOnMaxZoom: true,
-      showCoverageOnHover: false,
-      iconCreateFunction: (cluster) => {
-        const childCount = cluster.getChildCount();
-        let size = "small";
-        let sizeClass = "w-10 h-10 text-sm";
-        
-        if (childCount >= 10) {
-          size = "large";
-          sizeClass = "w-14 h-14 text-base";
-        } else if (childCount >= 5) {
-          size = "medium";
-          sizeClass = "w-12 h-12 text-sm";
-        }
+    // Load markercluster only when needed.
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    (async () => {
+      try {
+        await import("leaflet.markercluster");
+        if (cancelled) return;
 
-        return L.divIcon({
-          html: `<div class="flex items-center justify-center ${sizeClass} rounded-full bg-primary text-primary-foreground font-bold shadow-lg border-2 border-background">
-            ${childCount}
-          </div>`,
-          className: "custom-cluster-icon",
-          iconSize: L.point(40, 40),
+        // Create cluster group
+        const clusterGroup = L.markerClusterGroup({
+          chunkedLoading: true,
+          maxClusterRadius: 80,
+          spiderfyOnMaxZoom: true,
+          showCoverageOnHover: false,
+          iconCreateFunction: (cluster) => {
+            const childCount = cluster.getChildCount();
+            let sizeClass = "w-10 h-10 text-sm";
+
+            if (childCount >= 10) {
+              sizeClass = "w-14 h-14 text-base";
+            } else if (childCount >= 5) {
+              sizeClass = "w-12 h-12 text-sm";
+            }
+
+            return L.divIcon({
+              html: `<div class="flex items-center justify-center ${sizeClass} rounded-full bg-primary text-primary-foreground font-bold shadow-lg border-2 border-background">${childCount}</div>`,
+              className: "custom-cluster-icon",
+              iconSize: L.point(40, 40),
+            });
+          },
         });
-      },
-    });
 
-    // Add markers to cluster
-    municipios.forEach((municipio) => {
-      const color = getColor(municipio);
-      const radius = getRadius(municipio);
-      
-      const marker = L.circleMarker([municipio.latitude, municipio.longitude], {
-        radius: radius,
-        fillColor: color,
-        color: "#fff",
-        weight: 2,
-        opacity: 1,
-        fillOpacity: 0.8,
-      });
+        // Add markers to cluster
+        municipios.forEach((municipio) => {
+          const color = getColor(municipio);
+          const radius = getRadius(municipio);
 
-      // IMPORTANT: Avoid react-dom/server (renderToString) in the client bundle.
-      // Using a plain HTML popup here prevents React internals/context crashes.
-      const popupHtml = getClusterPopupHtml(municipio);
-      marker.bindPopup(popupHtml, { maxWidth: 320 });
-      
-      clusterGroup.addLayer(marker);
-    });
+          const marker = L.circleMarker([municipio.latitude, municipio.longitude], {
+            radius: radius,
+            fillColor: color,
+            color: "#fff",
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.8,
+          });
 
-    map.addLayer(clusterGroup);
-    clusterGroupRef.current = clusterGroup;
+          // IMPORTANT: Avoid react-dom/server (renderToString) in the client bundle.
+          // Using a plain HTML popup here prevents React internals/context crashes.
+          const popupHtml = getClusterPopupHtml(municipio);
+          marker.bindPopup(popupHtml, { maxWidth: 320 });
+
+          clusterGroup.addLayer(marker);
+        });
+
+        map.addLayer(clusterGroup);
+        clusterGroupRef.current = clusterGroup;
+      } catch (e) {
+        // If the plugin fails to load for any reason, we don't want to crash /map.
+        // Clusters just won't be available.
+        console.error("Failed to load leaflet.markercluster", e);
+      }
+    })();
 
     return () => {
+      cancelled = true;
       if (clusterGroupRef.current) {
         map.removeLayer(clusterGroupRef.current);
       }
