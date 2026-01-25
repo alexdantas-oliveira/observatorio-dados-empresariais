@@ -15,6 +15,7 @@ import Analises from "./pages/Analises";
 import Empresas from "./pages/Empresas";
 import MapaInterativo from "./pages/MapaInterativo";
 import Relatorios from "./pages/Relatorios";
+import Indicadores from "./pages/Indicadores";
 import Administracao from "./pages/Administracao";
 import NotFound from "./pages/NotFound";
 
@@ -78,6 +79,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Relatorios />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/indicators"
+              element={
+                <ProtectedRoute requiredRole="analista">
+                  <Indicadores />
                 </ProtectedRoute>
               }
             />
