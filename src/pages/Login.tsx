@@ -131,7 +131,7 @@ export default function Login() {
           
           {/* Footer */}
           <div className="absolute bottom-4 left-0 right-0 text-center text-sm text-white/60">
-            JUCEPI • SEBRAE • Governo do Piauí
+            JUCEPI & SEBRAE
           </div>
         </div>
       </div>
