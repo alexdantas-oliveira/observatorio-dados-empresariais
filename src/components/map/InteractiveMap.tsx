@@ -10,7 +10,73 @@ import { municipiosPI, getDensityColor, getPibColor, getIdhmColor, MunicipioData
 import { MapControls, DataLayerType } from "./MapControls";
 import { MapLegend } from "./MapLegend";
 import { MunicipalityPopup } from "./MunicipalityPopup";
-import { renderToString } from "react-dom/server";
+
+function escapeHtml(input: string) {
+  return input
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function formatBR(n: number) {
+  return n.toLocaleString("pt-BR");
+}
+
+function formatBRL(n: number) {
+  return `R$ ${n.toLocaleString("pt-BR")}`;
+}
+
+function getClusterPopupHtml(m: MunicipioData) {
+  // NOTE: This popup is used only for the cluster layer (pure Leaflet markers).
+  // The non-cluster markers still render <MunicipalityPopup /> via React-Leaflet.
+  const title = escapeHtml(m.nome);
+  const meso = escapeHtml(m.mesorregiao);
+  const setor = escapeHtml(m.setorPredominante);
+
+  return `
+  <div style="min-width:240px;padding:4px;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;">
+    <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(0,0,0,.12);padding-bottom:8px;margin-bottom:10px;gap:8px;">
+      <div style="font-weight:700;font-size:14px;color:#111827;">${title}</div>
+      <span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:999px;background:#334155;color:#fff;white-space:nowrap;">${meso}</span>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <span style="font-size:12px;color:#4b5563;">Empresas Ativas</span>
+        <span style="font-size:12px;font-weight:700;color:#065f46;">${formatBR(m.empresasAtivas)}</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <span style="font-size:12px;color:#4b5563;">Empresas Inativas</span>
+        <span style="font-size:12px;font-weight:700;color:#b91c1c;">${formatBR(m.empresasInativas)}</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <span style="font-size:12px;color:#4b5563;">Empregos Formais</span>
+        <span style="font-size:12px;font-weight:700;color:#1d4ed8;">${formatBR(m.empregos)}</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <span style="font-size:12px;color:#4b5563;">PIB per Capita</span>
+        <span style="font-size:12px;font-weight:700;color:#6d28d9;">${formatBRL(m.pibPerCapita)}</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <span style="font-size:12px;color:#4b5563;">IDHM</span>
+        <span style="font-size:12px;font-weight:700;color:#92400e;">${m.idhm.toFixed(3)}</span>
+      </div>
+
+      <div style="border-top:1px solid rgba(0,0,0,.12);padding-top:8px;margin-top:4px;display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+          <span style="font-size:11px;color:#6b7280;">Setor Predominante</span>
+          <span style="font-size:11px;font-weight:600;background:rgba(15,118,110,.12);color:#0f766e;padding:2px 6px;border-radius:6px;">${setor}</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+          <span style="font-size:11px;color:#6b7280;">População</span>
+          <span style="font-size:11px;font-weight:600;color:#374151;">${formatBR(m.populacao)} hab.</span>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
 
 // Fix for default marker icons
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -87,8 +153,10 @@ function ClusterLayer({ municipios, getColor, getRadius, showClusters }: Cluster
         fillOpacity: 0.8,
       });
 
-      const popupContent = renderToString(<MunicipalityPopup municipio={municipio} />);
-      marker.bindPopup(popupContent, { maxWidth: 300 });
+      // IMPORTANT: Avoid react-dom/server (renderToString) in the client bundle.
+      // Using a plain HTML popup here prevents React internals/context crashes.
+      const popupHtml = getClusterPopupHtml(municipio);
+      marker.bindPopup(popupHtml, { maxWidth: 320 });
       
       clusterGroup.addLayer(marker);
     });
