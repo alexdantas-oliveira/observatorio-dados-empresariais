@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -7,7 +7,30 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, BarChart3, Eye, EyeOff, ArrowRight } from "lucide-react";
-import loginIllustration from "@/assets/login-illustration.png";
+import loginIllustration1 from "@/assets/login-illustration.png";
+import loginIllustration2 from "@/assets/login-illustration-2.png";
+import loginIllustration3 from "@/assets/login-illustration-3.png";
+
+const slides = [
+  {
+    image: loginIllustration1,
+    title: "Descubra o potencial",
+    subtitle: "econômico do Piauí em",
+    highlight: "um só lugar!",
+  },
+  {
+    image: loginIllustration2,
+    title: "Análise regional",
+    subtitle: "com dados de todos os",
+    highlight: "87 municípios!",
+  },
+  {
+    image: loginIllustration3,
+    title: "Tome decisões",
+    subtitle: "estratégicas baseadas em",
+    highlight: "dados reais!",
+  },
+];
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -21,6 +44,14 @@ export default function Login() {
   const location = useLocation();
 
   const from = location.state?.from?.pathname || "/";
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,33 +74,59 @@ export default function Login() {
       {/* Left side - Branding */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary/90 via-primary to-primary/80 relative overflow-hidden">
         <div className="relative z-10 flex flex-col items-center justify-center p-12 w-full">
-          {/* Headline */}
-          <div className="text-center mb-8">
-            <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight">
-              Descubra o potencial
-              <br />
-              econômico do Piauí em
-              <br />
-              <span className="italic text-white/90">um só lugar!</span>
-            </h2>
+          {/* Headline with transition */}
+          <div className="text-center mb-8 h-32 flex items-center">
+            {slides.map((slide, index) => (
+              <h2
+                key={index}
+                className={`text-3xl md:text-4xl font-bold text-white leading-tight absolute left-0 right-0 px-12 transition-all duration-700 ease-in-out ${
+                  index === currentSlide
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-4"
+                }`}
+              >
+                {slide.title}
+                <br />
+                {slide.subtitle}
+                <br />
+                <span className="italic text-white/90">{slide.highlight}</span>
+              </h2>
+            ))}
           </div>
           
-          {/* Illustration */}
-          <div className="w-full max-w-md mb-8">
-            <div className="bg-white/95 rounded-3xl p-6 shadow-2xl">
-              <img 
-                src={loginIllustration} 
-                alt="Análise de dados empresariais" 
-                className="w-full h-auto"
-              />
-            </div>
+          {/* Illustration with transition */}
+          <div className="w-full max-w-md mb-8 relative h-72">
+            {slides.map((slide, index) => (
+              <div
+                key={index}
+                className={`absolute inset-0 bg-white/95 rounded-3xl p-6 shadow-2xl transition-all duration-700 ease-in-out ${
+                  index === currentSlide
+                    ? "opacity-100 scale-100"
+                    : "opacity-0 scale-95"
+                }`}
+              >
+                <img 
+                  src={slide.image} 
+                  alt={slide.title} 
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            ))}
           </div>
           
           {/* Pagination dots */}
           <div className="flex gap-2 mt-4">
-            <div className="w-2.5 h-2.5 rounded-full bg-white" />
-            <div className="w-2.5 h-2.5 rounded-full bg-white/40" />
-            <div className="w-2.5 h-2.5 rounded-full bg-white/40" />
+            {slides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                  index === currentSlide
+                    ? "bg-white w-6"
+                    : "bg-white/40 hover:bg-white/60"
+                }`}
+              />
+            ))}
           </div>
           
           {/* Footer */}
