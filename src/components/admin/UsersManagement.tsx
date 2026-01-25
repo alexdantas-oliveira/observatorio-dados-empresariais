@@ -95,12 +95,25 @@ export function UsersManagement() {
 
       if (rolesError) throw rolesError;
 
+      // Map of known test user emails based on full_name
+      const testUserEmails: Record<string, string> = {
+        "Administrador Sistema": "admin@teste.com",
+        "Maria Gestora": "gestor@teste.com",
+        "João Técnico": "tecnico@teste.com",
+        "Ana Analista": "analista@teste.com",
+        "Carlos Público": "publico@teste.com",
+      };
+
       // Combine data
       const usersData: UserWithProfile[] = profiles.map((profile) => {
         const userRole = roles.find((r) => r.user_id === profile.user_id);
+        const email = profile.full_name && testUserEmails[profile.full_name]
+          ? testUserEmails[profile.full_name]
+          : `${profile.full_name?.toLowerCase().replace(/\s+/g, ".")}@email.com`;
+        
         return {
           id: profile.user_id,
-          email: `${profile.full_name?.toLowerCase().replace(/\s+/g, ".")}@email.com`,
+          email,
           created_at: profile.created_at,
           last_sign_in_at: profile.updated_at,
           profile: {
