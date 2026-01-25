@@ -7,12 +7,13 @@ import {
   ScheduleReportDialog,
   ReportHistoryTable,
   ScheduledReportsTable,
+  IndicatorsPanel,
 } from "@/components/reports";
 import { generateReport, downloadPDF, ReportConfig } from "@/lib/pdfGenerator";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { FileText, Calendar, History, Loader2 } from "lucide-react";
+import { FileText, Calendar, History, Loader2, BarChart3 } from "lucide-react";
 
 interface ReportTemplate {
   id: string;
@@ -131,8 +132,12 @@ export default function Relatorios() {
         </div>
 
         {/* Tabs */}
-        <Tabs defaultValue="templates" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
+        <Tabs defaultValue="indicators" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4 lg:w-[520px]">
+            <TabsTrigger value="indicators" className="gap-1.5">
+              <BarChart3 className="h-4 w-4" />
+              Indicadores
+            </TabsTrigger>
             <TabsTrigger value="templates" className="gap-1.5">
               <FileText className="h-4 w-4" />
               Templates
@@ -146,6 +151,11 @@ export default function Relatorios() {
               Histórico
             </TabsTrigger>
           </TabsList>
+
+          {/* Indicators */}
+          <TabsContent value="indicators">
+            <IndicatorsPanel />
+          </TabsContent>
 
           {/* Templates */}
           <TabsContent value="templates" className="space-y-6">
