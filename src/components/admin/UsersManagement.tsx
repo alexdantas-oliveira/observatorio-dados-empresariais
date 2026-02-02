@@ -81,39 +81,50 @@ export function UsersManagement() {
   const fetchUsers = async () => {
     setIsLoading(true);
     try {
-      // Fetch profiles
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any).rpc('get_admin_users_list');
+
+      if (!error && data) {
+        // Map RPC response
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const usersData: UserWithProfile[] = data.map((user: any) => ({
+          id: user.id,
+          email: user.email,
+          created_at: user.created_at,
+          last_sign_in_at: user.last_sign_in_at,
+          profile: {
+            full_name: user.full_name,
+            organization: user.organization,
+          },
+          role: user.role,
+        }));
+        setUsers(usersData);
+        return;
+      }
+
+      console.warn("RPC get_admin_users_list failed or missing, falling back to public tables", error);
+
+      // Fallback: Fetch profiles and roles directly
       const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
         .select("*");
 
       if (profilesError) throw profilesError;
 
-      // Fetch roles
       const { data: roles, error: rolesError } = await supabase
         .from("user_roles")
         .select("*");
 
       if (rolesError) throw rolesError;
 
-      // Map of known test user emails based on full_name
-      const testUserEmails: Record<string, string> = {
-        "Administrador Sistema": "admin@teste.com",
-        "Maria Gestora": "gestor@teste.com",
-        "João Técnico": "tecnico@teste.com",
-        "Ana Analista": "analista@teste.com",
-        "Carlos Público": "publico@teste.com",
-      };
-
-      // Combine data
+      // Combine data (email will be hidden/unavailable)
       const usersData: UserWithProfile[] = profiles.map((profile) => {
         const userRole = roles.find((r) => r.user_id === profile.user_id);
-        const email = profile.full_name && testUserEmails[profile.full_name]
-          ? testUserEmails[profile.full_name]
-          : `${profile.full_name?.toLowerCase().replace(/\s+/g, ".")}@email.com`;
-        
+
         return {
           id: profile.user_id,
-          email,
+          // We can't get the real email without the RPC or Admin API
+          email: "email_oculto@sistema",
           created_at: profile.created_at,
           last_sign_in_at: profile.updated_at,
           profile: {
@@ -125,6 +136,13 @@ export function UsersManagement() {
       });
 
       setUsers(usersData);
+
+      toast({
+        title: "Modo de compatibilidade",
+        description: "Usando visualização básica. Aplique a migration para ver e-mails reais.",
+        variant: "default",
+      });
+
     } catch (error) {
       console.error("Error fetching users:", error);
       toast({

@@ -8,6 +8,7 @@ import {
   ReportHistoryTable,
   ScheduledReportsTable,
   IndicatorsPanel,
+  IndicatorsReports,
 } from "@/components/reports";
 import { generateReport, downloadPDF, ReportConfig } from "@/lib/pdfGenerator";
 import { supabase } from "@/integrations/supabase/client";
@@ -58,7 +59,7 @@ export default function Relatorios() {
 
     setGeneratingId(templateId);
     const template = templates.find((t) => t.id === templateId);
-    
+
     try {
       // Log to history
       const { error: historyError } = await supabase.from("report_history").insert({
@@ -132,12 +133,9 @@ export default function Relatorios() {
         </div>
 
         {/* Tabs */}
-        <Tabs defaultValue="indicators" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 lg:w-[520px]">
-            <TabsTrigger value="indicators" className="gap-1.5">
-              <BarChart3 className="h-4 w-4" />
-              Indicadores
-            </TabsTrigger>
+        <Tabs defaultValue="templates" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
+
             <TabsTrigger value="templates" className="gap-1.5">
               <FileText className="h-4 w-4" />
               Templates
@@ -152,10 +150,7 @@ export default function Relatorios() {
             </TabsTrigger>
           </TabsList>
 
-          {/* Indicators */}
-          <TabsContent value="indicators">
-            <IndicatorsPanel />
-          </TabsContent>
+
 
           {/* Templates */}
           <TabsContent value="templates" className="space-y-6">

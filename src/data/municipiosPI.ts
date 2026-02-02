@@ -546,13 +546,14 @@ export const mesorregiaoStats: MesorregiaoStats[] = [
 ];
 
 // Função para obter cor baseada na densidade de empresas
+// Função para obter cor baseada na densidade de empresas
 export function getDensityColor(empresasAtivas: number): string {
-  if (empresasAtivas > 30000) return "#166534"; // green-800
-  if (empresasAtivas > 10000) return "#16a34a"; // green-600
-  if (empresasAtivas > 5000) return "#22c55e";  // green-500
-  if (empresasAtivas > 2000) return "#4ade80";  // green-400
-  if (empresasAtivas > 1000) return "#86efac";  // green-300
-  return "#bbf7d0"; // green-200
+  if (empresasAtivas > 30000) return "#991b1b"; // red-800
+  if (empresasAtivas > 10000) return "#b91c1c"; // red-700
+  if (empresasAtivas > 5000) return "#dc2626";  // red-600
+  if (empresasAtivas > 2000) return "#ef4444";  // red-500
+  if (empresasAtivas > 1000) return "#f87171";  // red-400
+  return "#fca5a5"; // red-300
 }
 
 // Função para obter cor baseada no PIB per capita
@@ -578,9 +579,32 @@ export function getIdhmColor(idhm: number): string {
 export function getMesorregiaoColor(mesorregiao: string): string {
   const colors: Record<string, string> = {
     "Centro-Norte": "#3B82F6",
-    "Norte": "#10B981", 
+    "Norte": "#10B981",
     "Sudeste": "#F59E0B",
     "Sudoeste": "#8B5CF6"
   };
   return colors[mesorregiao] || "#6B7280";
+}
+
+// Função para obter cor baseada na densidade de empresas inativas
+export function getInactiveDensityColor(empresasInativas: number): string {
+  if (empresasInativas > 5000) return "#1f2937";  // gray-800
+  if (empresasInativas > 1000) return "#374151";  // gray-700
+  if (empresasInativas > 500) return "#4b5563";   // gray-600
+  if (empresasInativas > 200) return "#6b7280";   // gray-500
+  if (empresasInativas > 100) return "#9ca3af";   // gray-400
+  return "#d1d5db"; // gray-300
+}
+
+// Função para obter cor baseada na densidade de empregos (Verde)
+export function getEmploymentColor(empregos: number): string {
+  // Escala ajustada para números de empregos (estimativa baseada nos dados)
+  // Max: ~185k (Teresina), ~28k (Parnaíba), etc.
+  // Ajustando a escala para bater com a visualização anterior que dividia por 10 e usava a escala de empresas
+  if (empregos > 100000) return "#064e3b"; // emerald-900
+  if (empregos > 50000) return "#065f46";  // emerald-800
+  if (empregos > 20000) return "#047857";  // emerald-700
+  if (empregos > 10000) return "#059669";  // emerald-600
+  if (empregos > 5000) return "#10b981";   // emerald-500
+  return "#6ee7b7"; // emerald-300
 }

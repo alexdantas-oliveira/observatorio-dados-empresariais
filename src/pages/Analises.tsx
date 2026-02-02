@@ -3,12 +3,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Building2, 
-  Users, 
-  MapPin, 
+import {
+  TrendingUp,
+  TrendingDown,
+  Building2,
+  Users,
+  MapPin,
   Target,
   ArrowUpRight,
   ArrowDownRight,
@@ -159,8 +159,8 @@ export default function Analises() {
                   <div className={`p-2.5 rounded-xl ${insight.bgColor}`}>
                     <insight.icon className={`w-5 h-5 ${insight.color}`} />
                   </div>
-                  <Badge 
-                    variant="secondary" 
+                  <Badge
+                    variant="secondary"
                     className={`${insight.trend === 'up' ? 'text-emerald-600 bg-emerald-100' : insight.trend === 'down' ? 'text-amber-600 bg-amber-100' : 'text-blue-600 bg-blue-100'}`}
                   >
                     {insight.value}
@@ -217,7 +217,7 @@ export default function Analises() {
                         <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                         <XAxis dataKey="month" tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
                         <YAxis tick={{ fontSize: 12 }} tickLine={false} axisLine={false} tickFormatter={(v) => `${v}%`} />
-                        <Tooltip 
+                        <Tooltip
                           contentStyle={{
                             backgroundColor: "hsl(var(--card))",
                             border: "1px solid hsl(var(--border))",
@@ -226,18 +226,18 @@ export default function Analises() {
                           formatter={(value: number) => [`${value}%`, ""]}
                         />
                         <Legend />
-                        <Area 
-                          type="monotone" 
-                          dataKey="crescimento" 
-                          stroke="hsl(var(--chart-1))" 
+                        <Area
+                          type="monotone"
+                          dataKey="crescimento"
+                          stroke="hsl(var(--chart-1))"
                           fill="url(#crescimentoGradient)"
                           strokeWidth={2}
                           name="Crescimento Real"
                         />
-                        <Line 
-                          type="monotone" 
-                          dataKey="meta" 
-                          stroke="hsl(var(--chart-2))" 
+                        <Line
+                          type="monotone"
+                          dataKey="meta"
+                          stroke="hsl(var(--chart-2))"
                           strokeDasharray="5 5"
                           strokeWidth={2}
                           dot={false}
@@ -261,12 +261,13 @@ export default function Analises() {
                         <CartesianGrid strokeDasharray="3 3" className="stroke-muted" horizontal={false} />
                         <XAxis type="number" tick={{ fontSize: 12 }} tickLine={false} axisLine={false} tickFormatter={(v) => `${v}%`} />
                         <YAxis type="category" dataKey="ano" tick={{ fontSize: 12 }} tickLine={false} axisLine={false} width={60} />
-                        <Tooltip 
+                        <Tooltip
                           contentStyle={{
                             backgroundColor: "hsl(var(--card))",
                             border: "1px solid hsl(var(--border))",
                             borderRadius: "8px",
                           }}
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
                           formatter={(value: number, name: string, props: any) => [
                             `${value}% (${props.payload.empresas.toLocaleString('pt-BR')} empresas)`,
                             "Taxa"
@@ -301,7 +302,7 @@ export default function Analises() {
                         fillOpacity={0.3}
                         strokeWidth={2}
                       />
-                      <Tooltip 
+                      <Tooltip
                         contentStyle={{
                           backgroundColor: "hsl(var(--card))",
                           border: "1px solid hsl(var(--border))",
@@ -329,8 +330,8 @@ export default function Analises() {
                       <BarChart data={sectorComparisonData}>
                         <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                         <XAxis dataKey="setor" tick={{ fontSize: 11 }} tickLine={false} axisLine={false} />
-                        <YAxis tick={{ fontSize: 12 }} tickLine={false} axisLine={false} tickFormatter={(v) => v >= 1000 ? `${(v/1000).toFixed(0)}k` : v} />
-                        <Tooltip 
+                        <YAxis tick={{ fontSize: 12 }} tickLine={false} axisLine={false} tickFormatter={(v) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v} />
+                        <Tooltip
                           contentStyle={{
                             backgroundColor: "hsl(var(--card))",
                             border: "1px solid hsl(var(--border))",
@@ -372,12 +373,13 @@ export default function Analises() {
                             <Cell key={`cell-${index}`} fill={entry.color} className="stroke-card stroke-2" />
                           ))}
                         </Pie>
-                        <Tooltip 
+                        <Tooltip
                           contentStyle={{
                             backgroundColor: "hsl(var(--card))",
                             border: "1px solid hsl(var(--border))",
                             borderRadius: "8px",
                           }}
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
                           formatter={(value: number, name: string, props: any) => [
                             `${value}% (${props.payload.count.toLocaleString('pt-BR')} empresas)`,
                             name
@@ -402,30 +404,29 @@ export default function Analises() {
                   {sectorComparisonData
                     .sort((a, b) => b.crescimento - a.crescimento)
                     .map((sector, index) => (
-                    <div key={sector.setor} className="flex items-center gap-4">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                        index === 0 ? "bg-yellow-500/20 text-yellow-600" :
-                        index === 1 ? "bg-gray-300/30 text-gray-600" :
-                        index === 2 ? "bg-orange-400/20 text-orange-600" :
-                        "bg-muted text-muted-foreground"
-                      }`}>
-                        {index + 1}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="font-medium">{sector.setor}</span>
-                          <span className={`text-sm font-semibold ${sector.crescimento > 10 ? 'text-emerald-600' : 'text-foreground'}`}>
-                            +{sector.crescimento}%
-                          </span>
+                      <div key={sector.setor} className="flex items-center gap-4">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${index === 0 ? "bg-yellow-500/20 text-yellow-600" :
+                            index === 1 ? "bg-gray-300/30 text-gray-600" :
+                              index === 2 ? "bg-orange-400/20 text-orange-600" :
+                                "bg-muted text-muted-foreground"
+                          }`}>
+                          {index + 1}
                         </div>
-                        <Progress value={sector.crescimento * 3} className="h-2" />
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-medium">{sector.setor}</span>
+                            <span className={`text-sm font-semibold ${sector.crescimento > 10 ? 'text-emerald-600' : 'text-foreground'}`}>
+                              +{sector.crescimento}%
+                            </span>
+                          </div>
+                          <Progress value={sector.crescimento * 3} className="h-2" />
+                        </div>
+                        <div className="text-right min-w-[80px]">
+                          <p className="text-sm text-muted-foreground">{sector.atual.toLocaleString('pt-BR')}</p>
+                          <p className="text-xs text-muted-foreground">empresas</p>
+                        </div>
                       </div>
-                      <div className="text-right min-w-[80px]">
-                        <p className="text-sm text-muted-foreground">{sector.atual.toLocaleString('pt-BR')}</p>
-                        <p className="text-xs text-muted-foreground">empresas</p>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </CardContent>
             </Card>
@@ -510,8 +511,8 @@ export default function Analises() {
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                       <XAxis dataKey="periodo" tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
-                      <YAxis tick={{ fontSize: 12 }} tickLine={false} axisLine={false} tickFormatter={(v) => `${(v/1000).toFixed(0)}k`} />
-                      <Tooltip 
+                      <YAxis tick={{ fontSize: 12 }} tickLine={false} axisLine={false} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
+                      <Tooltip
                         contentStyle={{
                           backgroundColor: "hsl(var(--card))",
                           border: "1px solid hsl(var(--border))",
@@ -520,18 +521,18 @@ export default function Analises() {
                         formatter={(value: number) => [value.toLocaleString('pt-BR'), ""]}
                       />
                       <Legend />
-                      <Area 
-                        type="monotone" 
-                        dataKey="formais" 
-                        stroke="hsl(var(--chart-1))" 
+                      <Area
+                        type="monotone"
+                        dataKey="formais"
+                        stroke="hsl(var(--chart-1))"
                         fill="url(#formaisGradient)"
                         strokeWidth={2}
                         name="Empregos Formais"
                       />
-                      <Area 
-                        type="monotone" 
-                        dataKey="informais" 
-                        stroke="hsl(var(--chart-4))" 
+                      <Area
+                        type="monotone"
+                        dataKey="informais"
+                        stroke="hsl(var(--chart-4))"
                         fill="url(#informaisGradient)"
                         strokeWidth={2}
                         name="Empregos Informais"
@@ -557,7 +558,7 @@ export default function Analises() {
                       <CartesianGrid strokeDasharray="3 3" className="stroke-muted" horizontal={false} />
                       <XAxis type="number" tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
                       <YAxis type="category" dataKey="metric" tick={{ fontSize: 11 }} tickLine={false} axisLine={false} width={150} />
-                      <Tooltip 
+                      <Tooltip
                         contentStyle={{
                           backgroundColor: "hsl(var(--card))",
                           border: "1px solid hsl(var(--border))",

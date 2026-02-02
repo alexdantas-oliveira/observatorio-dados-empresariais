@@ -28,6 +28,7 @@ import {
   Users,
   LogOut,
   ChevronRight,
+  ScrollText,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -56,13 +57,14 @@ const mainMenuItems: MenuItem[] = [
 
 const reportMenuItems: MenuItem[] = [
   { title: "Relatórios", url: "/reports", icon: FileText, requiredRole: "tecnico_sebrae" },
-  { title: "Indicadores", url: "/indicators", icon: TrendingUp, requiredRole: "analista" },
+];
+
+const indicatorsMenuItems: MenuItem[] = [
+  { title: "Painel de Indicadores", url: "/indicators", icon: TrendingUp, requiredRole: "analista" },
 ];
 
 const adminMenuItems: MenuItem[] = [
-  { title: "Usuários", url: "/admin/users", icon: Users, requiredRole: "admin" },
-  { title: "Permissões", url: "/admin/roles", icon: Shield, requiredRole: "admin" },
-  { title: "Configurações", url: "/admin/settings", icon: Settings, requiredRole: "admin" },
+  { title: "Usuários", url: "/admin?tab=users", icon: Users, requiredRole: "admin" },
 ];
 
 export function AppSidebar() {
@@ -72,13 +74,14 @@ export function AppSidebar() {
 
   const collapsed = state === "collapsed";
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => location.pathname === path.split("?")[0];
 
   const filterByRole = (items: MenuItem[]) =>
     items.filter((item) => !item.requiredRole || hasRoleLevel(role, item.requiredRole));
 
   const filteredMainMenu = filterByRole(mainMenuItems);
   const filteredReportMenu = filterByRole(reportMenuItems);
+  const filteredIndicatorsMenu = filterByRole(indicatorsMenuItems);
   const filteredAdminMenu = filterByRole(adminMenuItems);
 
   const getInitials = (name: string | null) => {
@@ -137,7 +140,40 @@ export function AppSidebar() {
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
+
+
         </SidebarGroup>
+
+        {/* Indicators Menu */}
+        {filteredIndicatorsMenu.length > 0 && (
+          <SidebarGroup>
+            <SidebarGroupLabel className="text-sidebar-foreground/50 text-xs uppercase tracking-wider">
+              Indicadores
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {filteredIndicatorsMenu.map((item) => (
+                  <SidebarMenuItem key={item.url}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isActive(item.url)}
+                      tooltip={item.title}
+                    >
+                      <NavLink
+                        to={item.url}
+                        className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors"
+                        activeClassName="bg-sidebar-primary text-sidebar-primary-foreground"
+                      >
+                        <item.icon className="w-5 h-5 shrink-0" />
+                        {!collapsed && <span>{item.title}</span>}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
 
         {/* Reports Menu */}
         {filteredReportMenu.length > 0 && (
@@ -244,6 +280,6 @@ export function AppSidebar() {
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarFooter>
-    </Sidebar>
+    </Sidebar >
   );
 }

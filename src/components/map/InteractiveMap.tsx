@@ -1,24 +1,40 @@
 import { useEffect, useMemo, useState, useRef } from "react";
-import { MapContainer, TileLayer, CircleMarker, Popup, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, CircleMarker, Popup, useMap, Polygon } from "react-leaflet";
 import L from "leaflet";
+import piauiGeoJson from "@/data/piaui.json";
 import "leaflet/dist/leaflet.css";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
-// NOTE: We intentionally DO NOT import "leaflet.markercluster" at module scope.
-// With Vite + ESM, this plugin can sometimes break the initial render (blank screen)
-// due to interop/side-effect timing. We load it dynamically only when clusters are enabled.
 
-import { municipiosPI, getDensityColor, getPibColor, getIdhmColor, MunicipioData } from "@/data/municipiosPI";
+import { municipiosPI, getDensityColor, getPibColor, getIdhmColor, getInactiveDensityColor, getEmploymentColor, MunicipioData } from "@/data/municipiosPI";
 import { MapControls, DataLayerType } from "./MapControls";
 import { MapLegend } from "./MapLegend";
 import { MunicipalityPopup } from "./MunicipalityPopup";
+
+// Create the mask polygon (World - Piaui)
+const worldPolygon = [
+  [90, -180],
+  [90, 180],
+  [-90, 180],
+  [-90, -180],
+];
+
+// Extract coordinates from Piaui feature
+const piauiCoords = (piauiGeoJson as any).features[0].geometry.coordinates[0];
+
+// In Leaflet, a polygon with holes is defined as [OuterRing, Hole1, Hole2...]
+// Note: Leaflet expects [lat, lng], but GeoJSON is [lng, lat]. We need to map it.
+// GeoJSON coords are [lon, lat], Leaflet wants [lat, lon]
+const piauiLatLang = piauiCoords.map((coord: number[]) => [coord[1], coord[0]]);
+
+const maskPolygonData = [worldPolygon, piauiLatLang];
 
 function escapeHtml(input: string) {
   return input
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/\"/g, "&quot;")
+    .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 }
 
@@ -138,7 +154,7 @@ function ClusterLayer({ municipios, getColor, getRadius, showClusters }: Cluster
             }
 
             return L.divIcon({
-              html: `<div class="flex items-center justify-center ${sizeClass} rounded-full bg-primary text-primary-foreground font-bold shadow-lg border-2 border-background">${childCount}</div>`,
+              html: `<div class="flex items-center justify-center ${sizeClass} rounded-full bg-red-600 text-white font-bold shadow-lg border-2 border-background">${childCount}</div>`,
               className: "custom-cluster-icon",
               iconSize: L.point(40, 40),
             });
@@ -170,8 +186,6 @@ function ClusterLayer({ municipios, getColor, getRadius, showClusters }: Cluster
         map.addLayer(clusterGroup);
         clusterGroupRef.current = clusterGroup;
       } catch (e) {
-        // If the plugin fails to load for any reason, we don't want to crash /map.
-        // Clusters just won't be available.
         console.error("Failed to load leaflet.markercluster", e);
       }
     })();
@@ -196,12 +210,14 @@ export function InteractiveMap() {
       switch (activeLayer) {
         case "empresas":
           return getDensityColor(m.empresasAtivas);
+        case "empresas_inativas":
+          return getInactiveDensityColor(m.empresasInativas);
         case "pib":
           return getPibColor(m.pibPerCapita);
         case "idhm":
           return getIdhmColor(m.idhm);
         case "empregos":
-          return getDensityColor(m.empregos / 10);
+          return getEmploymentColor(m.empregos);
         default:
           return getDensityColor(m.empresasAtivas);
       }
@@ -213,6 +229,8 @@ export function InteractiveMap() {
       switch (activeLayer) {
         case "empresas":
           return Math.min(Math.max(m.empresasAtivas / 2000, 8), 35);
+        case "empresas_inativas":
+          return Math.min(Math.max(m.empresasInativas / 500, 8), 35);
         case "pib":
           return Math.min(Math.max(m.pibPerCapita / 2000, 8), 30);
         case "idhm":
@@ -229,12 +247,21 @@ export function InteractiveMap() {
     switch (activeLayer) {
       case "empresas":
         return [
-          { color: "#166534", label: "> 30.000 empresas" },
-          { color: "#16a34a", label: "10.000 - 30.000" },
-          { color: "#22c55e", label: "5.000 - 10.000" },
-          { color: "#4ade80", label: "2.000 - 5.000" },
-          { color: "#86efac", label: "1.000 - 2.000" },
-          { color: "#bbf7d0", label: "< 1.000 empresas" },
+          { color: "#991b1b", label: "> 30.000 empresas" },
+          { color: "#b91c1c", label: "10.000 - 30.000" },
+          { color: "#dc2626", label: "5.000 - 10.000" },
+          { color: "#ef4444", label: "2.000 - 5.000" },
+          { color: "#f87171", label: "1.000 - 2.000" },
+          { color: "#fca5a5", label: "< 1.000 empresas" },
+        ];
+      case "empresas_inativas":
+        return [
+          { color: "#1f2937", label: "> 5.000 inativas" },
+          { color: "#374151", label: "1.000 - 5.000" },
+          { color: "#4b5563", label: "500 - 1.000" },
+          { color: "#6b7280", label: "200 - 500" },
+          { color: "#9ca3af", label: "100 - 200" },
+          { color: "#d1d5db", label: "< 100 inativas" },
         ];
       case "pib":
         return [
@@ -255,12 +282,12 @@ export function InteractiveMap() {
         ];
       case "empregos":
         return [
-          { color: "#166534", label: "> 100.000 empregos" },
-          { color: "#16a34a", label: "50.000 - 100.000" },
-          { color: "#22c55e", label: "20.000 - 50.000" },
-          { color: "#4ade80", label: "10.000 - 20.000" },
-          { color: "#86efac", label: "5.000 - 10.000" },
-          { color: "#bbf7d0", label: "< 5.000 empregos" },
+          { color: "#064e3b", label: "> 100.000 empregos" },
+          { color: "#065f46", label: "50.000 - 100.000" },
+          { color: "#047857", label: "20.000 - 50.000" },
+          { color: "#059669", label: "10.000 - 20.000" },
+          { color: "#10b981", label: "5.000 - 10.000" },
+          { color: "#6ee7b7", label: "< 5.000 empregos" },
         ];
       default:
         return [];
@@ -271,6 +298,8 @@ export function InteractiveMap() {
     switch (activeLayer) {
       case "empresas":
         return "Empresas Ativas";
+      case "empresas_inativas":
+        return "Empresas Inativas";
       case "pib":
         return "PIB per Capita";
       case "idhm":
@@ -291,8 +320,29 @@ export function InteractiveMap() {
         scrollWheelZoom={true}
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+
+        {/* Mask Layer to focus on Piauí */}
+        <Polygon
+          positions={maskPolygonData as any}
+          pathOptions={{
+            color: "transparent",
+            fillColor: "#ffffff", // White mask
+            fillOpacity: 0.65,     // Adjust opacity for "blur/focus" effect
+            stroke: false,
+          }}
+        />
+
+        {/* Highlight Piauí Border */}
+        <Polygon
+          positions={piauiLatLang}
+          pathOptions={{
+            color: "#3b82f6", // Primary blue border
+            weight: 2,
+            fill: false,
+          }}
         />
 
         {/* Cluster layer when enabled */}

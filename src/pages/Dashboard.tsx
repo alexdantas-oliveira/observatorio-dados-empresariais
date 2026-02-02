@@ -14,8 +14,11 @@ import {
   BarChart3,
   FileText,
   Calendar,
+  Bot,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { AIChatOverlay } from "@/components/chat/AIChatOverlay";
 
 // Mock data for demonstration
 const mockStats = [
@@ -90,6 +93,7 @@ const recentActivities = [
 
 export default function Dashboard() {
   const { profile, role } = useAuth();
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const firstName = profile?.full_name?.split(" ")[0] || "Usuário";
   const greeting = getGreeting();
@@ -142,13 +146,12 @@ export default function Dashboard() {
                     <stat.icon className={`w-5 h-5 ${stat.color}`} />
                   </div>
                   <div
-                    className={`flex items-center gap-1 text-sm font-medium ${
-                      stat.trend === "up"
-                        ? "text-success"
-                        : stat.trend === "down"
+                    className={`flex items-center gap-1 text-sm font-medium ${stat.trend === "up"
+                      ? "text-success"
+                      : stat.trend === "down"
                         ? "text-destructive"
                         : "text-muted-foreground"
-                    }`}
+                      }`}
                   >
                     {stat.change}
                     {stat.trend === "up" && <ArrowUpRight className="w-4 h-4" />}
@@ -234,16 +237,26 @@ export default function Dashboard() {
                   Precisa de ajuda para analisar os dados?
                 </h3>
                 <p className="text-white/80 mt-1">
-                  Nossa equipe está pronta para auxiliar na interpretação dos indicadores.
+                  Acesse nossa Inteligência Artificial para auxiliar na interpretação dos indicadores.
                 </p>
               </div>
-              <Button variant="secondary" className="shrink-0">
-                Falar com especialista
-                <ArrowRight className="w-4 h-4 ml-2" />
+              <Button
+                variant="secondary"
+                className="shrink-0"
+                onClick={() => setIsChatOpen(true)}
+              >
+                Conversa com IA
+                <Bot className="w-4 h-4 ml-1" />
               </Button>
             </div>
           </CardContent>
         </Card>
+
+        <AIChatOverlay
+          isOpen={isChatOpen}
+          onClose={() => setIsChatOpen(false)}
+          userName={firstName}
+        />
       </div>
     </AppLayout>
   );

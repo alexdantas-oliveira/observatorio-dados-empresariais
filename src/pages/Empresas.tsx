@@ -168,10 +168,11 @@ export default function Empresas() {
         case "setor":
           comparison = a.setor.localeCompare(b.setor);
           break;
-        case "porte":
+        case "porte": {
           const porteOrder = { MEI: 1, ME: 2, EPP: 3, Médio: 4, Grande: 5 };
           comparison = porteOrder[a.porte] - porteOrder[b.porte];
           break;
+        }
         case "dataAbertura":
           comparison = new Date(a.dataAbertura).getTime() - new Date(b.dataAbertura).getTime();
           break;

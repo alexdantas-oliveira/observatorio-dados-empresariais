@@ -8,6 +8,8 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+// Adicione a linha abaixo com o endereço gerado pelo ngrok ou libere todo o tráfego:
+    allowedHosts: true,
     hmr: {
       overlay: false,
     },

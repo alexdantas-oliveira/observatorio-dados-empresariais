@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { Layers, Building2, TrendingUp, Users } from "lucide-react";
 
-export type DataLayerType = "empresas" | "pib" | "idhm" | "empregos";
+export type DataLayerType = "empresas" | "pib" | "idhm" | "empregos" | "empresas_inativas";
 
 interface MapControlsProps {
   activeLayer: DataLayerType;
@@ -28,13 +28,14 @@ export function MapControls({
 }: MapControlsProps) {
   const layers = [
     { value: "empresas", label: "Empresas Ativas", icon: Building2 },
+    { value: "empresas_inativas", label: "Empresas Inativas", icon: Building2 },
     { value: "pib", label: "PIB per Capita", icon: TrendingUp },
     { value: "idhm", label: "IDHM", icon: Users },
     { value: "empregos", label: "Empregos", icon: Users },
   ] as const;
 
   return (
-    <Card className="absolute top-4 left-4 z-[1000] p-4 bg-background/95 backdrop-blur-sm border-border/50 w-64">
+    <Card className="absolute top-4 right-4 z-[1000] p-4 bg-background/95 backdrop-blur-sm border-border/50 w-64">
       <div className="flex items-center gap-2 mb-4">
         <Layers className="h-4 w-4 text-primary" />
         <h4 className="font-semibold text-sm text-foreground">Camadas de Dados</h4>
@@ -47,7 +48,7 @@ export function MapControls({
             <SelectTrigger className="h-9">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="z-[1100]">
               {layers.map((layer) => (
                 <SelectItem key={layer.value} value={layer.value}>
                   <div className="flex items-center gap-2">

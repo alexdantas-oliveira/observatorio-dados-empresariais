@@ -1,4 +1,5 @@
 import { AppLayout } from "@/components/layout/AppLayout";
+import { useSearchParams } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -13,6 +14,8 @@ import { Settings, Users, Shield, ScrollText, AlertTriangle } from "lucide-react
 
 export default function Administracao() {
   const { role } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentTab = searchParams.get("tab") || "users";
 
   // Only admin can access this page
   if (role !== "admin") {
@@ -55,7 +58,11 @@ export default function Administracao() {
         <AdminStats />
 
         {/* Tabs */}
-        <Tabs defaultValue="users" className="space-y-6">
+        <Tabs
+          value={currentTab}
+          onValueChange={(value) => setSearchParams({ tab: value })}
+          className="space-y-6"
+        >
           <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
             <TabsTrigger value="users" className="gap-1.5">
               <Users className="h-4 w-4" />
