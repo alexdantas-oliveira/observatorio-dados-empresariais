@@ -7,7 +7,7 @@ import { componentTagger } from "lovable-tagger";
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
-    port: 8080,
+    port: 4345
 // Adicione a linha abaixo com o endereço gerado pelo ngrok ou libere todo o tráfego:
     allowedHosts: true,
     hmr: {
